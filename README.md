@@ -45,7 +45,11 @@ This repository contains the source code of my personal portfolio website. It is
 
 ## Screenshots
 
-> Add your screenshots in `docs/screenshots/` and keep these filenames for automatic rendering.
+image1.png
+
+image.png
+
+
 
 ### Hero Section
 
