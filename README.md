@@ -45,12 +45,6 @@ This repository contains the source code of my personal portfolio website. It is
 
 ## Screenshots
 
-image1.png
-
-image.png
-
-
-
 ### Hero Section
 
 ![Hero Section](docs/screenshots/hero-section.png)
