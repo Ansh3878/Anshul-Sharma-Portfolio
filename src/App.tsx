@@ -335,7 +335,7 @@ const Projects = () => (
             tagline: "Career Companion",
             desc: "A modern workspace utilizing Gemini AI to transform how professionals manage their career growth and technical skill acquisition.",
             tags: ["Next.js", "Gemini API", "Tailwind"],
-            image: "/src/img/matrix-image.png",
+            image: "/img/matrix-image.png",
             href: "https://matrix-ai-psi.vercel.app/",
           },
 
