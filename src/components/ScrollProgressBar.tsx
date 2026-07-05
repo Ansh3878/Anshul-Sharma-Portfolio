@@ -1,4 +1,3 @@
-"use client"
 
 import { motion, useScroll } from "motion/react"
 import { cn } from "@/lib/utils"

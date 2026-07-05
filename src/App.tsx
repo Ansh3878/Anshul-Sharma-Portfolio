@@ -5,6 +5,34 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence, type Variants } from "motion/react";
+import {
+  ArrowUpRight,
+  Menu,
+  X,
+  Globe,
+  Layers,
+  Zap,
+  Terminal,
+  Binary,
+  Brackets,
+  FileCode,
+  Database,
+  Monitor,
+  Cloud,
+  GitBranch,
+  Cpu,
+  ShieldCheck,
+  Github,
+  Linkedin,
+  Mail
+} from "lucide-react";
+
+import { LightRays } from "@/src/components/ui/light-rays.js"
+import AnimatedButton from "@/src/components/AnimatedButton"
+import { ScrollProgressBar } from "@/src/components/ScrollProgressBar"
+import { SmoothCursor } from "@/src/components/SmoothCursor"
+import ProjectShowcase from "@/src/components/ProjectShowcase"
+import LogoLoop from "@/src/components/ui/logo-loop"
 
 // --- Shared animation variants ---
 const fadeUp: Variants = {
@@ -40,37 +68,8 @@ const staggerItem: Variants = {
     transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
   },
 };
-import {
-  ArrowUpRight,
-  Menu,
-  X,
-  Globe,
-  Layers,
-  Zap,
-  Terminal,
-  Binary,
-  Brackets,
-  FileCode,
-  Database,
-  Monitor,
-  Cloud,
-  GitBranch,
-  Cpu,
-  ShieldCheck,
-  Github,
-  Linkedin,
-  Mail
-} from "lucide-react";
-
-import { LightRays } from "@/src/components/ui/light-rays.js"
-import AnimatedButton from "@/src/components/AnimatedButton"
-import { ScrollProgressBar } from "@/src/components/ScrollProgressBar"
-import { SmoothCursor } from "@/src/components/SmoothCursor"
-import ProjectShowcase from "@/src/components/ProjectShowcase"
-import LogoLoop from "@/src/components/ui/logo-loop"
 
 // --- Components ---
-
 
 const Navbar = ({ onOpen }: { onOpen: () => void }) => (
   <nav className="fixed top-0 left-0 right-0 z-50 bg-neutral-950/50 backdrop-blur-md border-b border-white/5">
@@ -279,7 +278,7 @@ const Hero = () => (
         className="max-w-md text-left"
       >
         <p className="text-sm text-zinc-400 leading-relaxed">
-          independent full-stack developer &amp; cybersecurity enthusiast based in India, helping teams build secure, high-performance web systems and modern architectural patterns.
+          independent full-stack developer & cybersecurity enthusiast based in India, helping teams build secure, high-performance web systems and modern architectural patterns.
         </p>
       </motion.div>
     </div>
@@ -484,7 +483,16 @@ const Experience = () => (
   </motion.section>
 );
 
-const PROJECTS = [
+interface Project {
+  title: string;
+  tagline?: string;
+  desc: string;
+  tags: string[];
+  image: string;
+  href: string;
+}
+
+const PROJECTS: Project[] = [
   {
     title: "Keepr",
     tagline: "Zero-Knowledge Security Suite",
