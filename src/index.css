@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Caveat:wght@400;700&family=JetBrains+Mono:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Caveat:wght@400;700&family=JetBrains+Mono:wght@400&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -10,6 +10,7 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   --font-signature: "Caveat", cursive;
+  --font-outfit: "Outfit", sans-serif;
 
   --color-brand-green: #22c55e;
 }
@@ -18,9 +19,12 @@
   body {
     @apply antialiased selection:bg-white/20 selection:text-white bg-background text-foreground;
   }
+
   * {
     @apply border-border outline-ring/50;
+    cursor: none !important;
   }
+
   html {
     @apply font-sans;
   }
@@ -37,13 +41,75 @@
 }
 
 @keyframes pulse-dot {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
 }
 
 .animate-pulse-dot {
   animation: pulse-dot 2s infinite;
+}
+
+/* ── Hero "secure coder" annotation ─────────────────────────── */
+.hero-annotation {
+  top: -0.6rem;
+  right: 1.6rem;
+}
+
+@media (max-width: 640px) {
+  .hero-annotation {
+    top: -2.8rem;
+    right: 0.8rem;
+  }
+}
+
+/* ── Animated Button ─────────────────────────────────────────── */
+.animated-btn-wrapper {
+  display: inline-flex;
+}
+
+.animated-btn {
+  background-color: #ffffff;
+  color: #0a0a0a;
+  padding-inline-start: 1.5rem;
+  /* ps-6  */
+  padding-inline-end: 3.5rem;
+  /* pe-14 */
+  transition: padding 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-btn__icon {
+  background-color: #0a0a0a;
+  color: #ffffff;
+  right: 0.25rem;
+  transition:
+    right 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    rotate 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* hover: text slides right, icon slides left and rotates 45° */
+.animated-btn-wrapper:hover .animated-btn {
+  padding-inline-start: 3.5rem;
+  /* pe-14 → ps-14 */
+  padding-inline-end: 1.5rem;
+  /* ps-6  → pe-6  */
+}
+
+.animated-btn-wrapper:hover .animated-btn__icon {
+  right: calc(100% - 2.75rem);
+  /* right-[calc(100%-44px)] */
+  rotate: 45deg;
 }
 
 @theme inline {

@@ -64,6 +64,7 @@ const Ray = ({
         {
           "--ray-left": `${left}%`,
           "--ray-width": `${width}px`,
+          willChange: "transform, opacity, filter",
         } as CSSProperties
       }
       initial={{ rotate: rotate }}
