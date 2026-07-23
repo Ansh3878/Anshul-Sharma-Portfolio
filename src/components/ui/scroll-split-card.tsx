@@ -61,10 +61,10 @@ export function ScrollSplitCard({
   });
 
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: isPhone ? 76 : 120,
-    damping: isPhone ? 30 : 24,
-    mass: isPhone ? 0.6 : 0.8,
-    restDelta: 0.0005,
+    stiffness: isPhone ? 100 : 120,
+    damping: isPhone ? 36 : 24,
+    mass: 0.8,
+    restDelta: 0.001,
   });
 
   // Keep the original desktop motion while tightening the geometry on smaller screens.
@@ -156,18 +156,6 @@ export function ScrollSplitCard({
     [`${viewport.h}px`, `${CARD_H}px`],
     { ease: smoothStep }
   );
-  const mobileScaleX = useTransform(
-    smoothProgress,
-    [0.02, 0.34],
-    [viewport.w / CARD_W, 1],
-    { ease: smoothStep }
-  );
-  const mobileScaleY = useTransform(
-    smoothProgress,
-    [0.02, 0.34],
-    [viewport.h / CARD_H, 1],
-    { ease: smoothStep }
-  );
   const mobileShadow = "0 14px 30px -14px rgba(0, 0, 0, 0.55)";
 
   return (
@@ -194,8 +182,6 @@ export function ScrollSplitCard({
             width: isPhone ? `${CARD_W}px` : outerWidth,
             height: isPhone ? `${CARD_H}px` : outerHeight,
             scale: combinedScale,
-            scaleX: isPhone ? mobileScaleX : 1,
-            scaleY: isPhone ? mobileScaleY : 1,
             y: cardsY, 
             transformStyle: "preserve-3d",
             willChange: isPhone ? "transform" : "width, height, transform",

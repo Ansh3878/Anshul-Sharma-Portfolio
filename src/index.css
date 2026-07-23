@@ -99,12 +99,34 @@
   margin: 0;
   padding: 0;
   align-items: center;
+  justify-content: center;
+  text-align: center;
   color: #ffffff;
   font-family: "Nunito", "Noto Sans Devanagari", "Noto Sans JP", sans-serif;
   font-size: var(--loader-font-size);
   font-weight: 800;
   line-height: 1;
   white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .loader-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .loader-clip {
+    width: clamp(8.5rem, 45vw, 11rem);
+    display: flex;
+    justify-content: center;
+  }
+
+  .loader-greeting {
+    justify-content: center;
+    text-align: center;
+  }
 }
 
 @media (min-width: 768px) {
@@ -253,8 +275,8 @@
 
 @media (max-width: 1023px) {
   .scroll-split-track {
-    height: 360vh;
-    height: 360svh;
+    height: 200vh;
+    height: 200svh;
   }
 
   .scroll-split-stage {
@@ -264,8 +286,8 @@
 
 @media (max-width: 639px) {
   .scroll-split-track {
-    height: 330vh;
-    height: 330svh;
+    height: 170vh;
+    height: 170svh;
   }
 }
 
