@@ -95,11 +95,20 @@ export function LightRays({
   ...props
 }: LightRaysProps) {
   const [rays, setRays] = useState<LightRay[]>([])
+  const [isMobile, setIsMobile] = useState(false)
   const cycleDuration = Math.max(speed, 0.1)
 
   useEffect(() => {
-    setRays(createRays(count, cycleDuration))
-  }, [count, cycleDuration])
+    const mediaQuery = window.matchMedia("(max-width: 639px)")
+    const updateMobile = () => setIsMobile(mediaQuery.matches)
+    updateMobile()
+    mediaQuery.addEventListener("change", updateMobile)
+    return () => mediaQuery.removeEventListener("change", updateMobile)
+  }, [])
+
+  useEffect(() => {
+    setRays(createRays(isMobile ? Math.min(count, 3) : count, cycleDuration))
+  }, [count, cycleDuration, isMobile])
 
   return (
     <div
@@ -111,8 +120,8 @@ export function LightRays({
       style={
         {
           "--light-rays-color": color,
-          "--light-rays-blur": `${blur}px`,
-          "--light-rays-length": length,
+          "--light-rays-blur": `${isMobile ? Math.min(blur, 20) : blur}px`,
+          "--light-rays-length": isMobile ? "58svh" : length,
           ...style,
         } as CSSProperties
       }

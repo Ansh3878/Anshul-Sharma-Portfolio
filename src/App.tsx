@@ -89,9 +89,9 @@ const Navbar = ({ onOpen }: { onOpen: () => void }) => {
   }, []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex justify-center px-6 py-4">
+    <nav className="site-navbar fixed top-0 left-0 right-0 z-50 flex justify-center px-6 py-4">
       <div className={cn(
-        "flex h-14 w-full items-center justify-between rounded-full border border-white/10 bg-neutral-950/80 px-6 shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.1)] backdrop-blur-xl transition-[max-width] duration-500 ease-out",
+        "site-navbar-inner flex h-14 w-full items-center justify-between rounded-full border border-white/10 bg-neutral-950/80 px-6 shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.1)] backdrop-blur-xl transition-[max-width] duration-500 ease-out",
         isScrolled ? "max-w-xl" : "max-w-5xl"
       )}>
         <div
@@ -131,7 +131,7 @@ const SideMenu = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ type: "spring", damping: 30, stiffness: 300, mass: 0.8 }}
-          className="fixed top-0 right-0 h-full w-[85vw] md:w-[30vw] bg-black z-[70] p-8 md:p-12 flex flex-col border-l border-white/10"
+          className="site-side-menu fixed top-0 right-0 h-full w-[85vw] md:w-[30vw] bg-black z-[70] p-8 md:p-12 flex flex-col border-l border-white/10"
         >
           <div className="flex justify-start mb-20">
             <button
@@ -238,7 +238,7 @@ const ScrollSplitSection = () => {
 const About = () => (
   <motion.section
     id="about"
-    className="mx-auto max-w-4xl border-t border-white/5 px-6 py-24"
+    className="content-section mx-auto max-w-4xl border-t border-white/5 px-6 py-24"
     variants={staggerContainer}
     initial="hidden"
     whileInView="visible"
@@ -303,7 +303,7 @@ const ALL_TECH = [
 ];
 
 const createTechLogoNode = (stack: typeof ALL_TECH[0], index: number) => (
-  <div key={index} className="flex items-center gap-3 bg-white/[0.02] border border-white/5 px-6 py-3 rounded-full hover:bg-white/[0.05] transition-all group cursor-none">
+  <div key={index} className="tech-pill flex items-center gap-3 bg-white/[0.02] border border-white/5 px-6 py-3 rounded-full hover:bg-white/[0.05] transition-all group cursor-none">
     <stack.icon className="w-5 h-5 text-zinc-500 group-hover:text-white transition-colors" />
     <span className="text-sm font-medium text-zinc-400 group-hover:text-white transition-colors">{stack.name}</span>
   </div>
@@ -319,7 +319,7 @@ const techLogos2 = [...ALL_TECH].reverse().map((stack, i) => ({
 
 const Stacks = () => (
   <motion.section
-    className="py-24 px-6 max-w-4xl mx-auto border-t border-white/5 overflow-hidden"
+    className="content-section py-24 px-6 max-w-4xl mx-auto border-t border-white/5 overflow-hidden"
     variants={staggerContainer}
     initial="hidden"
     whileInView="visible"
@@ -382,7 +382,7 @@ const EXPERIENCE_ITEMS = [
 const Experience = () => (
   <section
     id="experience"
-    className="mx-auto max-w-4xl border-t border-white/5 px-6 py-24"
+    className="content-section mx-auto max-w-4xl border-t border-white/5 px-6 py-24"
   >
     <motion.h2
       variants={fadeUp}
@@ -485,7 +485,7 @@ const STICKY_CARDS = PROJECTS.map(p => ({
 
 const Projects = () => (
   <section id="projects" className="border-t border-white/5">
-    <div className="py-12 px-6 max-w-4xl mx-auto flex items-end justify-between">
+    <div className="projects-heading py-12 px-6 max-w-4xl mx-auto flex items-end justify-between">
       <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase">Selected Projects</h2>
       <a
         href="https://github.com/Ansh3878"
@@ -501,7 +501,7 @@ const Projects = () => (
 
 
 const Footer = () => (
-  <footer className="pt-16 pb-0 px-6 max-w-4xl mx-auto border-t border-white/5 flex flex-col items-center">
+  <footer className="site-footer pt-16 pb-0 px-6 max-w-4xl mx-auto border-t border-white/5 flex flex-col items-center">
     <motion.div
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
@@ -509,7 +509,7 @@ const Footer = () => (
       className="text-center w-full"
     >
 
-      <div className="flex justify-center items-center gap-2">
+      <div className="footer-socials flex justify-center items-center gap-2">
         <a
           href="https://github.com/Ansh3878"
           target="_blank"
@@ -578,7 +578,7 @@ const EDUCATION_ITEMS = [
 const Education = () => (
   <section
     id="education"
-    className="mx-auto max-w-4xl border-t border-white/5 px-6 py-24"
+    className="content-section mx-auto max-w-4xl border-t border-white/5 px-6 py-24"
   >
     <motion.div
       variants={fadeUp}
@@ -646,7 +646,7 @@ export default function App() {
       <SmoothCursor />
       {showLoader && <Loader onComplete={() => setShowLoader(false)} />}
 
-      <main className="relative isolate min-h-screen bg-neutral-950 selection:bg-brand-green/20 selection:text-white">
+      <main className="site-main relative isolate min-h-screen bg-neutral-950 selection:bg-brand-green/20 selection:text-white">
         <div className="fixed inset-0 -z-10">
           {/* <NoiseTexture className="fixed inset-0 size-full opacity-40" /> */}
           <LightRays className="fixed inset-0 size-full " />

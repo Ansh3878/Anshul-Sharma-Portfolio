@@ -589,6 +589,146 @@
   }
 }
 
+@media (max-width: 639px) {
+  html,
+  body,
+  .site-main {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  .site-navbar {
+    padding: 0.75rem 1rem;
+  }
+
+  .site-navbar-inner {
+    height: 3.25rem;
+    padding-inline: 1.25rem;
+    backdrop-filter: blur(12px);
+  }
+
+  .site-side-menu {
+    width: min(88vw, 22rem);
+    padding: 1.5rem;
+  }
+
+  .content-section {
+    padding: 4rem 1.25rem;
+  }
+
+  .content-section h2 {
+    font-size: clamp(2rem, 9vw, 2.5rem);
+    line-height: 1;
+  }
+
+  .tech-pill {
+    gap: 0.5rem;
+    padding: 0.625rem 0.875rem;
+  }
+
+  .tech-pill svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .tech-pill span {
+    font-size: 0.75rem;
+  }
+
+  .projects-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 3rem 1.25rem 2rem;
+  }
+
+  .projects-heading h2 {
+    font-size: clamp(2rem, 9vw, 2.5rem);
+    line-height: 1;
+  }
+
+  .scroll-split-card-group {
+    contain: layout style;
+    isolation: isolate;
+  }
+
+  .scroll-split-texture {
+    display: none;
+  }
+
+  .cta-section {
+    width: auto;
+    margin-inline: 1rem;
+    padding: 2.5rem 1.125rem;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1.5rem;
+    background:
+      radial-gradient(circle at 82% 18%, rgba(255, 255, 255, 0.055), transparent 38%),
+      rgba(255, 255, 255, 0.018);
+  }
+
+  .cta-layout {
+    grid-template-columns: minmax(0, 1fr) clamp(6.25rem, 30vw, 7.5rem);
+    align-items: start;
+    gap: 0.625rem;
+  }
+
+  .cta-heading {
+    line-height: 0.94;
+  }
+
+  .cta-heading-line {
+    font-size: clamp(1.95rem, 9.5vw, 2.4rem);
+  }
+
+  .cta-actions {
+    margin-top: 1.25rem;
+  }
+
+  .cta-media {
+    align-self: center;
+    margin-top: 0;
+  }
+
+  .cta-media-tilt {
+    transform: translateX(clamp(-1.25rem, -3vw, -0.625rem)) rotate(-1.5deg);
+  }
+
+  .cta-media-frame {
+    border-radius: 0.875rem;
+  }
+
+  .cta-media-image {
+    height: clamp(6.25rem, 29vw, 7.5rem);
+  }
+
+  .site-footer {
+    padding-top: 3.5rem;
+    padding-inline: 1rem;
+  }
+
+  .footer-socials {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .footer-socials > a {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.625rem;
+  }
+
+  .footer-socials > span {
+    display: none;
+  }
+}
+
+@media (any-pointer: coarse) {
+  * {
+    cursor: auto !important;
+  }
+}
+
 @keyframes pulse-dot {
   0% {
     transform: scale(0.95);

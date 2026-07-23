@@ -50,6 +50,10 @@ export function ScrollSplitCard({
     };
   }, []);
 
+  const isCompact = viewport.w < 1024;
+  const isPhone = viewport.w < 640;
+  const isShortLandscape = isCompact && viewport.w > viewport.h && viewport.h < 600;
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     container: externalContainerRef,
@@ -57,16 +61,13 @@ export function ScrollSplitCard({
   });
 
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 120,
-    damping: 24,
-    mass: 0.8,
+    stiffness: isPhone ? 76 : 120,
+    damping: isPhone ? 30 : 24,
+    mass: isPhone ? 0.6 : 0.8,
     restDelta: 0.0005,
   });
 
   // Keep the original desktop motion while tightening the geometry on smaller screens.
-  const isCompact = viewport.w < 1024;
-  const isPhone = viewport.w < 640;
-  const isShortLandscape = isCompact && viewport.w > viewport.h && viewport.h < 600;
   const compactGutter = isPhone ? 24 : 48;
   const CARD_H = isCompact
     ? isShortLandscape
@@ -155,6 +156,19 @@ export function ScrollSplitCard({
     [`${viewport.h}px`, `${CARD_H}px`],
     { ease: smoothStep }
   );
+  const mobileScaleX = useTransform(
+    smoothProgress,
+    [0.02, 0.34],
+    [viewport.w / CARD_W, 1],
+    { ease: smoothStep }
+  );
+  const mobileScaleY = useTransform(
+    smoothProgress,
+    [0.02, 0.34],
+    [viewport.h / CARD_H, 1],
+    { ease: smoothStep }
+  );
+  const mobileShadow = "0 14px 30px -14px rgba(0, 0, 0, 0.55)";
 
   return (
     <div
@@ -177,14 +191,16 @@ export function ScrollSplitCard({
         {/* ── Card group: starts full-screen, scales/decreases size down to card layout ── */}
         <motion.div
           style={{ 
-            width: outerWidth,
-            height: outerHeight,
-            scale: combinedScale, 
+            width: isPhone ? `${CARD_W}px` : outerWidth,
+            height: isPhone ? `${CARD_H}px` : outerHeight,
+            scale: combinedScale,
+            scaleX: isPhone ? mobileScaleX : 1,
+            scaleY: isPhone ? mobileScaleY : 1,
             y: cardsY, 
             transformStyle: "preserve-3d",
-            willChange: "width, height, transform",
+            willChange: isPhone ? "transform" : "width, height, transform",
           }}
-          className="flex relative max-w-full"
+          className="scroll-split-card-group flex relative max-w-full"
         >
           {cards.slice(0, 3).map((card, i) => (
             <motion.div
@@ -205,7 +221,7 @@ export function ScrollSplitCard({
                 style={{
                   zIndex: 2,
                   borderRadius: i === 0 ? borderRadiusLeft : i === 2 ? borderRadiusRight : borderRadiusMiddle,
-                  boxShadow,
+                  boxShadow: isPhone ? mobileShadow : boxShadow,
                 }}
               >
                 <div
@@ -232,11 +248,11 @@ export function ScrollSplitCard({
                   transform: "rotateY(180deg)",
                   zIndex: 1,
                   borderRadius: i === 0 ? borderRadiusLeft : i === 2 ? borderRadiusRight : borderRadiusMiddle,
-                  boxShadow,
+                  boxShadow: isPhone ? mobileShadow : boxShadow,
                 }}
               >
                 <div
-                  className="pointer-events-none absolute inset-0 opacity-20 mix-blend-overlay"
+                  className="scroll-split-texture pointer-events-none absolute inset-0 opacity-20 mix-blend-overlay"
                   style={{
                     backgroundImage: `url("https://framerusercontent.com/images/6mcf62RlDfRfU61Yg5vb2pefpi4.png?width=256&height=256")`,
                     backgroundRepeat: "repeat",
