@@ -63,9 +63,33 @@ export function ScrollSplitCard({
     restDelta: 0.0005,
   });
 
-  // Target card size
-  const CARD_H = 550;
-  const CARD_W = Math.min(1152, viewport.w); // Remove padding subtraction
+  // Keep the original desktop motion while tightening the geometry on smaller screens.
+  const isCompact = viewport.w < 1024;
+  const isPhone = viewport.w < 640;
+  const isShortLandscape = isCompact && viewport.w > viewport.h && viewport.h < 600;
+  const compactGutter = isPhone ? 24 : 48;
+  const CARD_H = isCompact
+    ? isShortLandscape
+      ? Math.max(280, viewport.h * 0.7)
+      : isPhone
+        ? Math.min(420, Math.max(350, viewport.h * 0.54))
+        : Math.min(460, Math.max(380, viewport.h * 0.52))
+    : 550;
+  const CARD_W = isCompact
+    ? Math.max(240, viewport.w - compactGutter)
+    : Math.min(1152, viewport.w);
+  const finalScale = isCompact ? 0.96 : 0.9;
+  const splitDistance = isCompact
+    ? Math.min(20, Math.max(8, viewport.w * 0.025))
+    : 48;
+  const cardTilt = isCompact
+    ? Math.min(4, Math.max(2, viewport.w / 220))
+    : 6;
+  const finalCardsY = isCompact
+    ? isShortLandscape
+      ? -Math.min(40, viewport.h * 0.08)
+      : -Math.min(120, viewport.h * 0.14)
+    : -200;
 
   // ─── Phase 1 (0 → 0.38): The entire card container shrinks from full viewport to card size ───
   // We want the width to transition from viewport.w to CARD_W, and height from viewport.h to CARD_H.
@@ -73,18 +97,18 @@ export function ScrollSplitCard({
   const combinedScale = useTransform(
     smoothProgress,
     [0.3, 0.6],
-    [1, 0.9],
+    [1, finalScale],
     { ease: smoothStep }
   );
   
   // ─── Phase 2 (0.42 → 0.72): Cards separate ───
-  const leftX = useTransform(smoothProgress, [0.3, 0.6], [0, -48], { ease: smoothStep });
-  const rightX = useTransform(smoothProgress, [0.3, 0.6], [0, 48], { ease: smoothStep });
+  const leftX = useTransform(smoothProgress, [0.3, 0.6], [0, -splitDistance], { ease: smoothStep });
+  const rightX = useTransform(smoothProgress, [0.3, 0.6], [0, splitDistance], { ease: smoothStep });
 
   // ─── Phase 3 (0.72 → 1): Flip ───
   const rotateY = useTransform(smoothProgress, [0.55, 0.86], [0, 180], { ease: smoothStep });
-  const rotateZLeft = useTransform(smoothProgress, [0.55, 0.86], [0, 6], { ease: smoothStep });
-  const rotateZRight = useTransform(smoothProgress, [0.55, 0.86], [0, -6], { ease: smoothStep });
+  const rotateZLeft = useTransform(smoothProgress, [0.55, 0.86], [0, cardTilt], { ease: smoothStep });
+  const rotateZRight = useTransform(smoothProgress, [0.55, 0.86], [0, -cardTilt], { ease: smoothStep });
 
   // Border-radius on card panels: initially merged/flat joins, then rounded as they split
   const borderRadiusLeft = useTransform(smoothProgress, [0.02, 0.28, 0.34, 0.52], [
@@ -110,7 +134,7 @@ export function ScrollSplitCard({
   const shadowOpacity = useTransform(smoothProgress, [0.28, 0.52], [0, 0.4], { ease: smoothStep });
   const boxShadow = useMotionTemplate`inset 0 1px 1px rgba(255, 255, 255, ${borderOpacity}), inset 0 -24px 48px rgba(0, 0, 0, ${shadowOpacity}), 0 25px 50px -12px rgba(0, 0, 0, ${shadowOpacity})`;
 
-  const cardsY = useTransform(smoothProgress, [0.76, 0.92], [0, -200], { ease: smoothStep });
+  const cardsY = useTransform(smoothProgress, [0.76, 0.92], [0, finalCardsY], { ease: smoothStep });
 
   const textOpacity = useTransform(smoothProgress, [0.78, 0.92], [0, 1], { ease: smoothStep });
   const textY = useTransform(smoothProgress, [0.78, 0.92], [40, 0], { ease: smoothStep });
@@ -135,9 +159,12 @@ export function ScrollSplitCard({
   return (
     <div
       ref={containerRef}
-      className={cn("relative h-[400vh] w-full", className)}
+      className={cn("scroll-split-track relative w-full", className)}
     >
-      <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden [perspective:1200px]">
+      <div
+        className="scroll-split-stage sticky top-0 flex w-full items-center justify-center overflow-hidden"
+        style={{ perspective: isCompact ? "1800px" : "1200px" }}
+      >
 
         {/* Scroll hint */}
         <motion.div
@@ -195,7 +222,7 @@ export function ScrollSplitCard({
               {/* Back Side: Content Card */}
               <motion.div
                 className={cn(
-                  "absolute inset-0 overflow-hidden flex flex-col justify-end p-8 [backface-visibility:hidden] will-change-transform",
+                  "scroll-split-card-back absolute inset-0 overflow-hidden flex flex-col justify-end [backface-visibility:hidden] will-change-transform",
                   "border border-white/5 bg-gradient-to-br from-white/10 to-transparent",
                   "shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),inset_0_-24px_48px_rgba(0,0,0,0.2)]"
                 )}
@@ -215,19 +242,19 @@ export function ScrollSplitCard({
                     backgroundRepeat: "repeat",
                   }}
                 />
-                <div className="relative z-10 mb-auto">{card.icon}</div>
+                <div className="scroll-split-card-icon relative z-10 mb-auto">{card.icon}</div>
                 {card.features && (
-                  <div className="relative z-10 mb-10 flex flex-col gap-3.5">
+                  <div className="scroll-split-card-features relative z-10 flex flex-col">
                     {card.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-start gap-3 text-sm opacity-90">
-                        <div className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-white/60" />
+                      <div key={idx} className="scroll-split-card-feature flex items-start opacity-90">
+                        <div className="scroll-split-card-bullet shrink-0 rounded-full bg-white/60" />
                         <span className="leading-relaxed tracking-wide">{feature}</span>
                       </div>
                     ))}
                   </div>
                 )}
-                <h3 className="relative z-10 mb-4 text-3xl font-semibold tracking-tight">{card.title}</h3>
-                <p className="relative z-10 text-base opacity-70 leading-relaxed">{card.description}</p>
+                <h3 className="scroll-split-card-title relative z-10 font-semibold tracking-tight">{card.title}</h3>
+                <p className="scroll-split-card-description relative z-10 opacity-70">{card.description}</p>
               </motion.div>
             </motion.div>
           ))}
@@ -235,10 +262,10 @@ export function ScrollSplitCard({
 
         {/* Ending text */}
         <motion.div
-          className="absolute bottom-[20%] left-0 right-0 text-center pointer-events-none"
+          className="scroll-split-ending absolute left-0 right-0 text-center pointer-events-none"
           style={{ opacity: textOpacity, y: textY }}
         >
-          <p className="text-3xl font-medium tracking-tight text-white font-serif italic">
+          <p className="scroll-split-ending-text px-4 font-medium tracking-tight text-white font-serif italic">
             This is what I bring to the table.
           </p>
         </motion.div>

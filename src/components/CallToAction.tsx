@@ -18,27 +18,27 @@ export default function CallToAction() {
   }, []);
 
   return (
-    <section className="relative py-16 px-6 max-w-4xl mx-auto border-t border-white/5">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-10">
+    <section className="cta-section relative py-16 px-6 max-w-4xl mx-auto border-t border-white/5">
+      <div className="cta-layout flex flex-col lg:flex-row lg:items-center justify-between gap-10">
 
         {/* ── LEFT: Headline ── */}
         <motion.div
-          className="flex-1 select-none min-w-0"
+          className="cta-copy flex-1 select-none min-w-0"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
         >
           <h2
-            className="text-white tracking-tighter leading-[0.9]"
+            className="cta-heading text-white tracking-tighter leading-[0.9]"
             style={{ fontFamily: "var(--font-outfit)", fontWeight: 700 }}
           >
             {/* Line 1: "lets [animated word]"
                 Invisible placeholder sets the true baseline/height.
                 Animated word layers absolutely on top — same font = same baseline. */}
             <span
-              className="block"
-              style={{ fontSize: "clamp(32px, 5.2vw, 72px)", lineHeight: 1 }}
+              className="cta-heading-line block"
+              style={{ lineHeight: 1 }}
             >
               lets{" "}
               <span style={{ position: "relative", display: "inline-block" }}>
@@ -76,8 +76,7 @@ export default function CallToAction() {
 
             {/* Line 2 */}
             <motion.span
-              className="block"
-              style={{ fontSize: "clamp(32px, 5.2vw, 72px)" }}
+              className="cta-heading-line block"
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -88,8 +87,7 @@ export default function CallToAction() {
 
             {/* Line 3 */}
             <motion.span
-              className="block text-zinc-500"
-              style={{ fontSize: "clamp(32px, 5.2vw, 72px)" }}
+              className="cta-heading-line block text-zinc-500"
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -101,7 +99,7 @@ export default function CallToAction() {
 
           {/* CTA row */}
           <motion.div
-            className="mt-7 flex items-center gap-5 flex-wrap"
+            className="cta-actions mt-7 flex items-center gap-5 flex-wrap"
             initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -116,23 +114,25 @@ export default function CallToAction() {
 
         {/* ── RIGHT: GIF card — tilted, white border ── */}
         <motion.div
-          className="flex-shrink-0 w-full md:w-[260px]"
-          style={{ rotate: "-9deg" }}
+          className="cta-media flex-shrink-0"
           initial={{ opacity: 0, scale: 0.88 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ delay: 0.25, duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div
-            className="rounded-[20px] overflow-hidden"
-            style={{ border: "2.5px solid rgba(255,255,255,0.85)" }}
-          >
-            <img
-              src={GIF_URL}
-              alt="Let's build something great"
-              className="w-full object-cover block"
-              style={{ height: "180px" }}
-            />
+          <div className="cta-media-tilt">
+            <div
+              className="cta-media-frame overflow-hidden"
+              style={{ border: "2.5px solid rgba(255,255,255,0.85)" }}
+            >
+              <img
+                src={GIF_URL}
+                alt="Let's build something great"
+                className="cta-media-image w-full object-cover block"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
           </div>
         </motion.div>
       </div>

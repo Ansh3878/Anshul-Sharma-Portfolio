@@ -180,37 +180,25 @@ const SideMenu = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
 );
 
 const Hero = ({ isVisible }: { isVisible: boolean }) => {
-  const [fontSize, setFontSize] = useState(42);
-
-  useEffect(() => {
-    const calc = () => {
-      // Scale font so "Anshul Sharma" fits within ~90% of viewport width
-      // The font is roughly 17 chars × ~0.55em wide each
-      const vw = window.innerWidth;
-      const target = vw * 0.78; // 78% of screen width
-      const perChar = 0.55;
-      const charCount = 13; // "Anshul Sharma"
-      const computed = Math.floor(target / (charCount * perChar));
-      setFontSize(Math.min(Math.max(computed, 28), 72));
-    };
-    calc();
-    window.addEventListener("resize", calc);
-    return () => window.removeEventListener("resize", calc);
-  }, []);
-
   return (
     <section
       id="hero"
-      className="relative h-screen w-full flex flex-col justify-center items-center overflow-hidden"
+      className="hero-section"
+      aria-labelledby="hero-title"
     >
+      <h1 id="hero-title" className="sr-only">Anshul Sharma</h1>
+
       {isVisible && (
-        <Signature
-          text="Anshul Sharma"
-          fontSize={fontSize}
-          duration={1.2}
-          delay={0.5}
-          color="#ffffff"
-        />
+        <div className="hero-signature-frame" aria-hidden="true">
+          <Signature
+            text="Anshul Sharma"
+            fontSize={96}
+            duration={1.2}
+            delay={0.5}
+            color="#ffffff"
+            className="hero-signature"
+          />
+        </div>
       )}
     </section>
   );
