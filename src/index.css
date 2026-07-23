@@ -99,8 +99,6 @@
   margin: 0;
   padding: 0;
   align-items: center;
-  justify-content: flex-start;
-  text-align: left;
   color: #ffffff;
   font-family: "Nunito", "Noto Sans Devanagari", "Noto Sans JP", sans-serif;
   font-size: var(--loader-font-size);
@@ -109,12 +107,13 @@
   white-space: nowrap;
 }
 
+/* Mobile-only loader centering with static dot positioned beside centered text */
 @media (max-width: 767px) {
   .loader-content {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: clamp(0.375rem, 2vw, 0.5rem);
+    gap: clamp(0.4rem, 2vw, 0.6rem);
     width: fit-content;
     max-width: 100%;
     margin: 0 auto;
@@ -123,18 +122,12 @@
   .loader-clip {
     width: clamp(6.5rem, 36vw, 9.5rem);
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   .loader-greeting {
-    justify-content: flex-start;
-    text-align: left;
-  }
-}
-
-@media (min-width: 768px) {
-  .loader-content {
-    grid-template-columns: auto minmax(0, 12rem);
+    justify-content: center;
+    text-align: center;
   }
 }
 
@@ -289,8 +282,16 @@
 
 @media (max-width: 639px) {
   .scroll-split-track {
-    height: 170vh;
-    height: 170svh;
+    height: 180vh;
+    height: 180svh;
+  }
+
+  .scroll-split-ending {
+    bottom: 8%;
+  }
+
+  .scroll-split-ending-text {
+    font-size: clamp(1rem, 3.8vw, 1.25rem);
   }
 }
 

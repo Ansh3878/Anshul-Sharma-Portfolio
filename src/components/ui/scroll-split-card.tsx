@@ -93,7 +93,7 @@ export function ScrollSplitCard({
     ? isShortLandscape
       ? -Math.min(40, viewport.h * 0.08)
       : isPhone
-        ? 0
+        ? -Math.min(50, viewport.h * 0.08)
         : -Math.min(120, viewport.h * 0.14)
     : -200;
 
