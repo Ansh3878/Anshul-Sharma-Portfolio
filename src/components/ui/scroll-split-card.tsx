@@ -61,11 +61,14 @@ export function ScrollSplitCard({
   });
 
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: isPhone ? 100 : 120,
-    damping: isPhone ? 36 : 24,
+    stiffness: 120,
+    damping: 24,
     mass: 0.8,
     restDelta: 0.001,
   });
+
+  // On phone screens, use direct scroll progress to eliminate spring latency, stuttering, and boundary jumps
+  const progressToUse = isPhone ? scrollYProgress : smoothProgress;
 
   // Keep the original desktop motion while tightening the geometry on smaller screens.
   const compactGutter = isPhone ? 24 : 48;
@@ -89,69 +92,71 @@ export function ScrollSplitCard({
   const finalCardsY = isCompact
     ? isShortLandscape
       ? -Math.min(40, viewport.h * 0.08)
-      : -Math.min(120, viewport.h * 0.14)
+      : isPhone
+        ? 0
+        : -Math.min(120, viewport.h * 0.14)
     : -200;
 
   // ─── Phase 1 (0 → 0.38): The entire card container shrinks from full viewport to card size ───
   // We want the width to transition from viewport.w to CARD_W, and height from viewport.h to CARD_H.
   // Slight phase overlap keeps the movement continuous between shrink, split, and flip.
   const combinedScale = useTransform(
-    smoothProgress,
+    progressToUse,
     [0.3, 0.6],
     [1, finalScale],
     { ease: smoothStep }
   );
   
   // ─── Phase 2 (0.42 → 0.72): Cards separate ───
-  const leftX = useTransform(smoothProgress, [0.3, 0.6], [0, -splitDistance], { ease: smoothStep });
-  const rightX = useTransform(smoothProgress, [0.3, 0.6], [0, splitDistance], { ease: smoothStep });
+  const leftX = useTransform(progressToUse, [0.3, 0.6], [0, -splitDistance], { ease: smoothStep });
+  const rightX = useTransform(progressToUse, [0.3, 0.6], [0, splitDistance], { ease: smoothStep });
 
   // ─── Phase 3 (0.72 → 1): Flip ───
-  const rotateY = useTransform(smoothProgress, [0.55, 0.86], [0, 180], { ease: smoothStep });
-  const rotateZLeft = useTransform(smoothProgress, [0.55, 0.86], [0, cardTilt], { ease: smoothStep });
-  const rotateZRight = useTransform(smoothProgress, [0.55, 0.86], [0, -cardTilt], { ease: smoothStep });
+  const rotateY = useTransform(progressToUse, [0.55, 0.86], [0, 180], { ease: smoothStep });
+  const rotateZLeft = useTransform(progressToUse, [0.55, 0.86], [0, cardTilt], { ease: smoothStep });
+  const rotateZRight = useTransform(progressToUse, [0.55, 0.86], [0, -cardTilt], { ease: smoothStep });
 
   // Border-radius on card panels: initially merged/flat joins, then rounded as they split
-  const borderRadiusLeft = useTransform(smoothProgress, [0.02, 0.28, 0.34, 0.52], [
+  const borderRadiusLeft = useTransform(progressToUse, [0.02, 0.28, 0.34, 0.52], [
     "0px 0px 0px 0px", 
     "16px 0px 0px 16px", 
     "16px 0px 0px 16px", 
     "16px 16px 16px 16px"
   ], { ease: smoothStep });
-  const borderRadiusMiddle = useTransform(smoothProgress, [0.02, 0.28, 0.34, 0.52], [
+  const borderRadiusMiddle = useTransform(progressToUse, [0.02, 0.28, 0.34, 0.52], [
     "0px 0px 0px 0px", 
     "0px 0px 0px 0px", 
     "0px 0px 0px 0px", 
     "16px 16px 16px 16px"
   ], { ease: smoothStep });
-  const borderRadiusRight = useTransform(smoothProgress, [0.02, 0.28, 0.34, 0.52], [
+  const borderRadiusRight = useTransform(progressToUse, [0.02, 0.28, 0.34, 0.52], [
     "0px 0px 0px 0px", 
     "0px 16px 16px 0px", 
     "0px 16px 16px 0px", 
     "16px 16px 16px 16px"
   ], { ease: smoothStep });
 
-  const borderOpacity = useTransform(smoothProgress, [0.28, 0.52], [0, 0.2], { ease: smoothStep });
-  const shadowOpacity = useTransform(smoothProgress, [0.28, 0.52], [0, 0.4], { ease: smoothStep });
+  const borderOpacity = useTransform(progressToUse, [0.28, 0.52], [0, 0.2], { ease: smoothStep });
+  const shadowOpacity = useTransform(progressToUse, [0.28, 0.52], [0, 0.4], { ease: smoothStep });
   const boxShadow = useMotionTemplate`inset 0 1px 1px rgba(255, 255, 255, ${borderOpacity}), inset 0 -24px 48px rgba(0, 0, 0, ${shadowOpacity}), 0 25px 50px -12px rgba(0, 0, 0, ${shadowOpacity})`;
 
-  const cardsY = useTransform(smoothProgress, [0.76, 0.92], [0, finalCardsY], { ease: smoothStep });
+  const cardsY = useTransform(progressToUse, [0.76, 0.92], [0, finalCardsY], { ease: smoothStep });
 
-  const textOpacity = useTransform(smoothProgress, [0.78, 0.92], [0, 1], { ease: smoothStep });
-  const textY = useTransform(smoothProgress, [0.78, 0.92], [40, 0], { ease: smoothStep });
+  const textOpacity = useTransform(progressToUse, [0.78, 0.92], [0, 1], { ease: smoothStep });
+  const textY = useTransform(progressToUse, [0.78, 0.92], [40, 0], { ease: smoothStep });
 
-  const startTextOpacity = useTransform(smoothProgress, [0.01, 0.13], [1, 0], { ease: smoothStep });
-  const startTextY = useTransform(smoothProgress, [0.01, 0.13], [0, 20], { ease: smoothStep });
+  const startTextOpacity = useTransform(progressToUse, [0.01, 0.13], [1, 0], { ease: smoothStep });
+  const startTextY = useTransform(progressToUse, [0.01, 0.13], [0, 20], { ease: smoothStep });
 
   // Outer container dimensions scale smoothly
   const outerWidth = useTransform(
-    smoothProgress,
+    progressToUse,
     [0.02, 0.34],
     [`${viewport.w}px`, `${CARD_W}px`],
     { ease: smoothStep }
   );
   const outerHeight = useTransform(
-    smoothProgress,
+    progressToUse,
     [0.02, 0.34],
     [`${viewport.h}px`, `${CARD_H}px`],
     { ease: smoothStep }
