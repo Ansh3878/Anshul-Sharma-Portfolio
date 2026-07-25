@@ -107,13 +107,13 @@
   white-space: nowrap;
 }
 
-/* Mobile-only loader centering with static dot positioned beside centered text */
+/* Mobile-only loader centering with static dot positioned beside text */
 @media (max-width: 767px) {
   .loader-content {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: clamp(0.4rem, 2vw, 0.6rem);
+    gap: clamp(0.45rem, 2vw, 0.65rem);
     width: fit-content;
     max-width: 100%;
     margin: 0 auto;
@@ -122,12 +122,12 @@
   .loader-clip {
     width: clamp(6.5rem, 36vw, 9.5rem);
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .loader-greeting {
-    justify-content: center;
-    text-align: center;
+    justify-content: flex-start;
+    text-align: left;
   }
 }
 
