@@ -54,10 +54,7 @@
   overflow: hidden;
   box-sizing: border-box;
   padding:
-    max(1.5rem, env(safe-area-inset-top))
-    max(1.25rem, env(safe-area-inset-right))
-    max(1.5rem, env(safe-area-inset-bottom))
-    max(1.25rem, env(safe-area-inset-left));
+    max(1.5rem, env(safe-area-inset-top)) max(1.25rem, env(safe-area-inset-right)) max(1.5rem, env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left));
   background-color: #0a0a0a;
   isolation: isolate;
 }
@@ -107,13 +104,13 @@
   white-space: nowrap;
 }
 
-/* Mobile-only loader centering with static dot positioned beside text */
+/* Mobile-only loader centering with static dot positioned beside centered text */
 @media (max-width: 767px) {
   .loader-content {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: clamp(0.45rem, 2vw, 0.65rem);
+    gap: clamp(0.4rem, 2vw, 0.6rem);
     width: fit-content;
     max-width: 100%;
     margin: 0 auto;
@@ -122,16 +119,17 @@
   .loader-clip {
     width: clamp(6.5rem, 36vw, 9.5rem);
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   .loader-greeting {
-    justify-content: flex-start;
-    text-align: left;
+    justify-content: center;
+    text-align: center;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .loader-screen,
   .loader-greeting {
     transition-duration: 0.01ms !important;
@@ -150,10 +148,7 @@
   overflow: hidden;
   box-sizing: border-box;
   padding:
-    max(4.5rem, env(safe-area-inset-top))
-    max(1rem, env(safe-area-inset-right))
-    max(2rem, env(safe-area-inset-bottom))
-    max(1rem, env(safe-area-inset-left));
+    max(4.5rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(2rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
 }
 
 .hero-signature-frame {
@@ -181,8 +176,7 @@
 @media (orientation: landscape) and (max-height: 560px) and (max-width: 1023px) {
   .hero-section {
     padding-block:
-      max(3.75rem, env(safe-area-inset-top))
-      max(1rem, env(safe-area-inset-bottom));
+      max(3.75rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-bottom));
   }
 
   .hero-signature-frame {
@@ -239,7 +233,7 @@
   line-height: 1.45;
 }
 
-.scroll-split-card-icon > svg {
+.scroll-split-card-icon>svg {
   width: clamp(1rem, 3.5vw, 1.5rem);
   height: clamp(1rem, 3.5vw, 1.5rem);
 }
@@ -324,7 +318,7 @@
     line-height: 1.625;
   }
 
-  .scroll-split-card-icon > svg {
+  .scroll-split-card-icon>svg {
     width: 1.5rem;
     height: 1.5rem;
   }
@@ -616,6 +610,7 @@
 }
 
 @media (max-width: 639px) {
+
   html,
   body,
   .site-main {
@@ -739,12 +734,12 @@
     gap: 0.5rem;
   }
 
-  .footer-socials > a {
+  .footer-socials>a {
     padding: 0.5rem 0.625rem;
     font-size: 0.625rem;
   }
 
-  .footer-socials > span {
+  .footer-socials>span {
     display: none;
   }
 }
