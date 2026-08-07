@@ -2,11 +2,13 @@
 
 import { cn } from "@/lib/utils";
 import {
+  AnimatePresence,
   motion,
   useScroll,
   useTransform,
 } from "motion/react";
 import { useRef, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 const smoothStep = (value: number) => value * value * (3 - 2 * value);
 
@@ -36,6 +38,9 @@ export function ScrollSplitCard({
   containerRef: externalContainerRef,
 }: ScrollSplitCardProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const cardTriggerRef = useRef<HTMLDivElement | null>(null);
+  const [activeCard, setActiveCard] = useState<ScrollSplitCardItem | null>(null);
 
   // Measure initial screen size once, only re-evaluate on horizontal resize (orientation / window width change).
   // Ignoring height-only resizes avoids layout jumps when mobile address bars collapse/expand.
@@ -67,6 +72,32 @@ export function ScrollSplitCard({
 
   const isPhone = viewport.w < 640;
   const isCompact = viewport.w < 1024;
+
+  useEffect(() => {
+    if (!activeCard) return;
+
+    const bodyOverflow = document.body.style.overflow;
+    const rootOverflow = document.documentElement.style.overflow;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setActiveCard(null);
+    };
+
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+    window.requestAnimationFrame(() => closeButtonRef.current?.focus());
+
+    return () => {
+      document.body.style.overflow = bodyOverflow;
+      document.documentElement.style.overflow = rootOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+      cardTriggerRef.current?.focus({ preventScroll: true });
+    };
+  }, [activeCard]);
+
+  useEffect(() => {
+    if (!isCompact) setActiveCard(null);
+  }, [isCompact]);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -197,7 +228,24 @@ export function ScrollSplitCard({
           {cards.slice(0, 3).map((card, i) => (
             <motion.div
               key={i}
-              className="relative h-full flex-1"
+              className={cn(
+                "relative h-full flex-1",
+                isCompact && "cursor-pointer touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+              )}
+              role={isCompact ? "button" : undefined}
+              tabIndex={isCompact ? 0 : undefined}
+              aria-label={isCompact ? `View full details for ${card.title}` : undefined}
+              onClick={(event) => {
+                if (!isCompact || rotateY.get() < 90) return;
+                cardTriggerRef.current = event.currentTarget;
+                setActiveCard(card);
+              }}
+              onKeyDown={(event) => {
+                if (!isCompact || rotateY.get() < 90 || (event.key !== "Enter" && event.key !== " ")) return;
+                event.preventDefault();
+                cardTriggerRef.current = event.currentTarget;
+                setActiveCard(card);
+              }}
               style={{
                 x: i === 0 ? leftX : i === 2 ? rightX : 0,
                 rotateY,
@@ -255,6 +303,16 @@ export function ScrollSplitCard({
                   className="scroll-split-texture pointer-events-none absolute inset-0 opacity-20 mix-blend-overlay"
                   style={{ backgroundImage: `url("${TEXTURE_URL}")`, backgroundRepeat: "repeat" }}
                 />
+                {isCompact && (
+                  <span
+                    className="absolute right-2 top-2 z-20 grid h-7 w-7 place-items-center rounded-full border border-white/20 bg-black/15 text-white/80 backdrop-blur-sm"
+                    aria-hidden="true"
+                  >
+                    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.75">
+                      <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5" />
+                    </svg>
+                  </span>
+                )}
                 <div className="scroll-split-card-icon relative z-10 mb-auto">{card.icon}</div>
                 {card.features && (
                   <div className="scroll-split-card-features relative z-10 flex flex-col gap-0.5 my-1 sm:my-2">
@@ -283,6 +341,77 @@ export function ScrollSplitCard({
           </p>
         </motion.div>
       </div>
+
+      {typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {activeCard && isCompact && (
+            <motion.div
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setActiveCard(null)}
+            >
+              <motion.div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="scroll-split-dialog-title"
+                aria-describedby="scroll-split-dialog-description"
+                className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col overflow-y-auto overscroll-contain rounded-3xl border border-white/15 p-6 shadow-2xl sm:p-8"
+                style={{
+                  backgroundColor: activeCard.bgColor,
+                  color: activeCard.textColor,
+                  boxShadow: CARD_FACE_SHADOW,
+                }}
+                initial={{ opacity: 0, y: 28, scale: 0.94 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 320, damping: 28 }}
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-20 mix-blend-overlay"
+                  style={{ backgroundImage: `url("${TEXTURE_URL}")`, backgroundRepeat: "repeat" }}
+                />
+
+                <button
+                  ref={closeButtonRef}
+                  type="button"
+                  className="absolute right-4 top-4 z-20 grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-black/20 text-white transition-colors hover:bg-black/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                  aria-label={`Close ${activeCard.title} details`}
+                  onClick={() => setActiveCard(null)}
+                >
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.75">
+                    <path d="M6 6l12 12M18 6 6 18" />
+                  </svg>
+                </button>
+
+                <div className="relative z-10 mb-14">{activeCard.icon}</div>
+
+                {activeCard.features && (
+                  <div className="relative z-10 mb-6 flex flex-col gap-3">
+                    {activeCard.features.map((feature, index) => (
+                      <div key={index} className="flex items-start gap-3 text-sm leading-relaxed opacity-90">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-current opacity-70" />
+                        <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <h3 id="scroll-split-dialog-title" className="relative z-10 text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">
+                  {activeCard.title}
+                </h3>
+                <p id="scroll-split-dialog-description" className="relative z-10 mt-4 text-base leading-relaxed opacity-80 sm:text-lg">
+                  {activeCard.description}
+                </p>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }
