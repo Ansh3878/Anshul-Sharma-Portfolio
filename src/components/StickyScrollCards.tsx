@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { motion, useScroll, useSpring, useTransform } from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { useRef, type CSSProperties } from "react";
 
 const smoothStep = (value: number) => value * value * (3 - 2 * value);
@@ -115,7 +115,7 @@ function StickyScrollCard({
             </span>
           )}
         </div>
-        
+
         {desc && (
           <p className="project-card-description text-sm text-zinc-400 leading-relaxed line-clamp-3 mb-4">
             {desc}
