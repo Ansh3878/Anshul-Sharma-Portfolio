@@ -6,7 +6,6 @@ import {
   useScroll,
   useTransform,
   useMotionTemplate,
-  useSpring,
 } from "motion/react";
 import { useRef, useState, useEffect } from "react";
 
@@ -120,7 +119,6 @@ export function ScrollSplitCard({
     <div
       ref={containerRef}
       className={cn("scroll-split-track relative w-full", className)}
-      style={{ height: "350vh" }}
     >
       <div
         className="scroll-split-stage sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden"

@@ -143,7 +143,6 @@
   width: 100%;
   min-height: 100vh;
   min-height: 100svh;
-  min-height: 100dvh;
   place-items: center;
   overflow: hidden;
   box-sizing: border-box;
@@ -208,7 +207,7 @@
 
 /* Scroll-split cards: compact-device geometry without changing desktop motion */
 .scroll-split-track {
-  height: 400vh;
+  height: 350vh;
 }
 
 .scroll-split-stage {
@@ -270,7 +269,8 @@
   }
 
   .scroll-split-stage {
-    height: 100dvh;
+    height: 100vh;
+    height: 100svh;
   }
 }
 
@@ -495,7 +495,7 @@
 
   .project-card-stage {
     height: 100vh;
-    height: 100dvh;
+    height: 100svh;
     box-sizing: border-box;
     padding-inline: 1.5rem;
   }
@@ -505,7 +505,8 @@
   }
 
   .project-stack-card {
-    top: calc(-4dvh + var(--project-card-offset) + 96px);
+    top: calc(-4vh + var(--project-card-offset) + 96px);
+    top: calc(-4svh + var(--project-card-offset) + 96px);
     width: min(78vw, 28rem);
     max-width: calc(100vw - 3rem);
     border-radius: 1rem;
@@ -568,7 +569,8 @@
   }
 
   .project-stack-card {
-    top: calc(-3dvh + var(--project-card-offset) + 68px);
+    top: calc(-3vh + var(--project-card-offset) + 68px);
+    top: calc(-3svh + var(--project-card-offset) + 68px);
     width: min(86vw, 22rem);
     max-width: calc(100vw - 2rem);
     border-radius: 0.875rem;
