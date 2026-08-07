@@ -2,8 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { motion, useScroll, useSpring, useTransform } from "motion/react";
-import ReactLenis from "lenis/react";
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useRef, type CSSProperties } from "react";
 
 const smoothStep = (value: number) => value * value * (3 - 2 * value);
 
@@ -184,27 +183,8 @@ export function StickyScrollCards({
     ease: smoothStep,
   });
 
-  // Hide the native scrollbar while this component is mounted
-  useEffect(() => {
-    const style = document.createElement("style");
-    style.id = "__sticky-scroll-cards-no-bar";
-    style.textContent =
-      "html { scrollbar-width: none; -ms-overflow-style: none; } html::-webkit-scrollbar { display: none; }";
-    document.head.appendChild(style);
-    return () => {
-      document.getElementById("__sticky-scroll-cards-no-bar")?.remove();
-    };
-  }, []);
-
   return (
-    <ReactLenis
-      root
-      options={{
-        lerp: 0.08,
-        smoothWheel: true,
-        wheelMultiplier: 0.85,
-      }}
-    >
+    <div>
       <main
         ref={container}
         className={cn(
@@ -238,6 +218,6 @@ export function StickyScrollCards({
           );
         })}
       </main>
-    </ReactLenis>
+    </div>
   );
 }
