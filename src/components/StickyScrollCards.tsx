@@ -170,16 +170,10 @@ export function StickyScrollCards({
     target: container,
     offset: ["start start", "end end"],
   });
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 120,
-    damping: 24,
-    mass: 0.8,
-    restDelta: 0.0005,
-  });
-  const hintOpacity = useTransform(smoothProgress, [0, 0.06, 0.16], [0, 1, 0], {
+  const hintOpacity = useTransform(scrollYProgress, [0, 0.06, 0.16], [0, 1, 0], {
     ease: smoothStep,
   });
-  const hintY = useTransform(smoothProgress, [0, 0.16], [12, -8], {
+  const hintY = useTransform(scrollYProgress, [0, 0.16], [12, -8], {
     ease: smoothStep,
   });
 
@@ -211,7 +205,7 @@ export function StickyScrollCards({
               key={`card_${i}`}
               i={i}
               {...card}
-              progress={smoothProgress}
+              progress={scrollYProgress}
               range={[scaleStart, 0.9]}
               targetScale={targetScale}
             />

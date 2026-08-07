@@ -67,59 +67,52 @@ export function ScrollSplitCard({
     offset: ["start start", "end end"],
   });
 
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 120,
-    damping: 24,
-    mass: 0.8,
-    restDelta: 0.001,
-  });
-
   // Responsive metrics scaled smoothly for mobile to desktop
-  const CARD_H = isPhone ? Math.min(480, viewport.h * 0.58) : isCompact ? 460 : 550;
-  const CARD_W = isPhone ? Math.max(300, viewport.w - 32) : isCompact ? Math.min(768, viewport.w - 64) : Math.min(1152, viewport.w);
+  const CARD_H = isPhone ? Math.min(360, Math.max(300, viewport.h * 0.46)) : isCompact ? 460 : 550;
+  const CARD_W = isPhone ? Math.max(280, viewport.w - 24) : isCompact ? Math.min(768, viewport.w - 64) : Math.min(1152, viewport.w);
   const splitDistance = isPhone ? 8 : isCompact ? 20 : 48;
   const cardTilt = isPhone ? 2 : isCompact ? 4 : 6;
   const finalCardsY = isPhone ? -30 : isCompact ? -80 : -160;
 
   // Transformations
-  const combinedScale = useTransform(smoothProgress, [0.1, 0.4], [1, isPhone ? 0.98 : 0.9], { ease: smoothStep });
+  const combinedScale = useTransform(scrollYProgress, [0.1, 0.4], [1, isPhone ? 0.98 : 0.9], { ease: smoothStep });
   
-  const leftX = useTransform(smoothProgress, [0.1, 0.4], [0, -splitDistance], { ease: smoothStep });
-  const rightX = useTransform(smoothProgress, [0.1, 0.4], [0, splitDistance], { ease: smoothStep });
+  const leftX = useTransform(scrollYProgress, [0.1, 0.4], [0, -splitDistance], { ease: smoothStep });
+  const rightX = useTransform(scrollYProgress, [0.1, 0.4], [0, splitDistance], { ease: smoothStep });
 
-  const rotateY = useTransform(smoothProgress, [0.4, 0.75], [0, 180], { ease: smoothStep });
-  const rotateZLeft = useTransform(smoothProgress, [0.4, 0.75], [0, cardTilt], { ease: smoothStep });
-  const rotateZRight = useTransform(smoothProgress, [0.4, 0.75], [0, -cardTilt], { ease: smoothStep });
+  const rotateY = useTransform(scrollYProgress, [0.4, 0.75], [0, 180], { ease: smoothStep });
+  const rotateZLeft = useTransform(scrollYProgress, [0.4, 0.75], [0, cardTilt], { ease: smoothStep });
+  const rotateZRight = useTransform(scrollYProgress, [0.4, 0.75], [0, -cardTilt], { ease: smoothStep });
 
   // Cross-browser JS face-swap (Firefox / Zen / Safari / Chrome compliant)
   const frontFaceOpacity = useTransform(rotateY, (r) => (r < 90 ? 1 : 0));
   const backFaceOpacity = useTransform(rotateY, (r) => (r >= 90 ? 1 : 0));
 
   const borderRadiusLeft = useTransform(
-    smoothProgress, [0.1, 0.35],
+    scrollYProgress, [0.1, 0.35],
     ["16px 0px 0px 16px", "16px 16px 16px 16px"],
     { ease: smoothStep }
   );
   const borderRadiusMiddle = useTransform(
-    smoothProgress, [0.1, 0.35],
+    scrollYProgress, [0.1, 0.35],
     ["0px 0px 0px 0px", "16px 16px 16px 16px"],
     { ease: smoothStep }
   );
   const borderRadiusRight = useTransform(
-    smoothProgress, [0.1, 0.35],
+    scrollYProgress, [0.1, 0.35],
     ["0px 16px 16px 0px", "16px 16px 16px 16px"],
     { ease: smoothStep }
   );
 
-  const borderOpacity = useTransform(smoothProgress, [0.05, 0.35], [0.1, 0.2], { ease: smoothStep });
-  const shadowOpacity = useTransform(smoothProgress, [0.05, 0.35], [0.2, 0.4], { ease: smoothStep });
+  const borderOpacity = useTransform(scrollYProgress, [0.05, 0.35], [0.1, 0.2], { ease: smoothStep });
+  const shadowOpacity = useTransform(scrollYProgress, [0.05, 0.35], [0.2, 0.4], { ease: smoothStep });
   const boxShadow = useMotionTemplate`inset 0 1px 1px rgba(255,255,255,${borderOpacity}), inset 0 -24px 48px rgba(0,0,0,${shadowOpacity}), 0 25px 50px -12px rgba(0,0,0,${shadowOpacity})`;
 
-  const cardsY = useTransform(smoothProgress, [0.65, 0.85], [0, finalCardsY], { ease: smoothStep });
-  const textOpacity = useTransform(smoothProgress, [0.7, 0.88], [0, 1], { ease: smoothStep });
-  const textY = useTransform(smoothProgress, [0.7, 0.88], [30, 0], { ease: smoothStep });
-  const startTextOpacity = useTransform(smoothProgress, [0.01, 0.12], [1, 0], { ease: smoothStep });
-  const startTextY = useTransform(smoothProgress, [0.01, 0.12], [0, 20], { ease: smoothStep });
+  const cardsY = useTransform(scrollYProgress, [0.65, 0.85], [0, finalCardsY], { ease: smoothStep });
+  const textOpacity = useTransform(scrollYProgress, [0.7, 0.88], [0, 1], { ease: smoothStep });
+  const textY = useTransform(scrollYProgress, [0.7, 0.88], [30, 0], { ease: smoothStep });
+  const startTextOpacity = useTransform(scrollYProgress, [0.01, 0.12], [1, 0], { ease: smoothStep });
+  const startTextY = useTransform(scrollYProgress, [0.01, 0.12], [0, 20], { ease: smoothStep });
 
   const getBR = (i: number) => i === 0 ? borderRadiusLeft : i === 2 ? borderRadiusRight : borderRadiusMiddle;
 
@@ -182,7 +175,7 @@ export function ScrollSplitCard({
               {/* Back Side: Card Content */}
               <motion.div
                 className={cn(
-                  "scroll-split-card-back absolute inset-0 overflow-hidden flex flex-col justify-end p-4 sm:p-6",
+                  "scroll-split-card-back absolute inset-0 overflow-hidden flex flex-col justify-end p-3 sm:p-6",
                   "border border-white/5 bg-gradient-to-br from-white/10 to-transparent",
                   "shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),inset_0_-24px_48px_rgba(0,0,0,0.2)]"
                 )}
@@ -202,17 +195,17 @@ export function ScrollSplitCard({
                 />
                 <div className="scroll-split-card-icon relative z-10 mb-auto">{card.icon}</div>
                 {card.features && (
-                  <div className="scroll-split-card-features relative z-10 flex flex-col gap-1 my-2">
+                  <div className="scroll-split-card-features relative z-10 flex flex-col gap-0.5 my-1 sm:my-2">
                     {card.features.map((feature, idx) => (
-                      <div key={idx} className="scroll-split-card-feature flex items-start gap-1.5 opacity-90">
-                        <div className="scroll-split-card-bullet shrink-0 w-1.5 h-1.5 mt-1.5 rounded-full bg-white/60" />
-                        <span className="text-xs sm:text-sm leading-relaxed tracking-wide">{feature}</span>
+                      <div key={idx} className="scroll-split-card-feature flex items-start gap-1 opacity-90">
+                        <div className="scroll-split-card-bullet shrink-0 w-1 h-1 mt-1.5 rounded-full bg-white/60" />
+                        <span className="text-[11px] sm:text-sm leading-tight sm:leading-relaxed tracking-wide">{feature}</span>
                       </div>
                     ))}
                   </div>
                 )}
-                <h3 className="scroll-split-card-title relative z-10 text-base sm:text-xl font-semibold tracking-tight leading-snug">{card.title}</h3>
-                <p className="scroll-split-card-description relative z-10 text-xs sm:text-sm opacity-70 line-clamp-3 mt-1 leading-relaxed">{card.description}</p>
+                <h3 className="scroll-split-card-title relative z-10 text-sm sm:text-xl font-semibold tracking-tight leading-snug">{card.title}</h3>
+                <p className="scroll-split-card-description relative z-10 text-[11px] sm:text-sm opacity-70 line-clamp-2 sm:line-clamp-3 mt-0.5 sm:mt-1 leading-normal sm:leading-relaxed">{card.description}</p>
               </motion.div>
             </motion.div>
           ))}
