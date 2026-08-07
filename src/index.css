@@ -254,7 +254,8 @@
 }
 
 .scroll-split-ending {
-  bottom: 12%;
+  top: 50%;
+  bottom: auto;
 }
 
 .scroll-split-ending-text {
@@ -280,20 +281,12 @@
     height: 180svh;
   }
 
-  .scroll-split-ending {
-    bottom: 8%;
-  }
-
   .scroll-split-ending-text {
     font-size: clamp(1rem, 3.8vw, 1.25rem);
   }
 }
 
 @media (orientation: landscape) and (max-height: 600px) and (max-width: 1023px) {
-  .scroll-split-ending {
-    bottom: 4%;
-  }
-
   .scroll-split-ending-text {
     font-size: clamp(0.875rem, 3vw, 1.125rem);
   }
@@ -337,10 +330,6 @@
     width: 0.375rem;
     height: 0.375rem;
     margin-top: 0.5rem;
-  }
-
-  .scroll-split-ending {
-    bottom: 20%;
   }
 
   .scroll-split-ending-text {

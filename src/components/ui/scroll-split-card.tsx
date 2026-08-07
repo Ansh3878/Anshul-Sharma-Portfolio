@@ -5,7 +5,6 @@ import {
   motion,
   useScroll,
   useTransform,
-  useMotionTemplate,
 } from "motion/react";
 import { useRef, useState, useEffect } from "react";
 
@@ -28,6 +27,7 @@ interface ScrollSplitCardProps {
 }
 
 const TEXTURE_URL = "https://framerusercontent.com/images/6mcf62RlDfRfU61Yg5vb2pefpi4.png?width=256&height=256";
+const CARD_FACE_SHADOW = "inset 0 1px 1px rgba(255,255,255,0.16), inset 0 -24px 48px rgba(0,0,0,0.32), 0 25px 50px -12px rgba(0,0,0,0.32)";
 
 export function ScrollSplitCard({
   className,
@@ -46,11 +46,19 @@ export function ScrollSplitCard({
 
   useEffect(() => {
     let lastWidth = window.innerWidth;
+    let lastHeight = window.innerHeight;
     const onResize = () => {
-      // Only update if width actually changes to prevent address-bar height resize loops
-      if (Math.abs(window.innerWidth - lastWidth) > 10) {
-        lastWidth = window.innerWidth;
-        setViewport({ w: window.innerWidth, h: window.innerHeight });
+      const nextWidth = window.innerWidth;
+      const nextHeight = window.innerHeight;
+      const widthChanged = Math.abs(nextWidth - lastWidth) > 10;
+      const desktopHeightChanged = nextWidth >= 1024 && Math.abs(nextHeight - lastHeight) > 10;
+
+      // Desktop needs a true full-screen opening panel. On mobile, ignore
+      // height-only changes caused by browser chrome expanding/collapsing.
+      if (widthChanged || desktopHeightChanged) {
+        lastWidth = nextWidth;
+        lastHeight = nextHeight;
+        setViewport({ w: nextWidth, h: nextHeight });
       }
     };
     window.addEventListener("resize", onResize);
@@ -74,42 +82,83 @@ export function ScrollSplitCard({
   const finalCardsY = isPhone ? -30 : isCompact ? -80 : -160;
 
   // Transformations
-  const combinedScale = useTransform(scrollYProgress, [0.1, 0.4], [1, isPhone ? 0.98 : 0.9], { ease: smoothStep });
-  
-  const leftX = useTransform(scrollYProgress, [0.1, 0.4], [0, -splitDistance], { ease: smoothStep });
-  const rightX = useTransform(scrollYProgress, [0.1, 0.4], [0, splitDistance], { ease: smoothStep });
+  // Desktop sequence: full viewport -> framed artwork -> split -> flip.
+  // Compact layouts keep their existing sizing and timing.
+  const groupWidth = useTransform(
+    scrollYProgress,
+    [0, 0.22],
+    [isCompact ? CARD_W : viewport.w, CARD_W],
+    { ease: smoothStep }
+  );
+  const groupHeight = useTransform(
+    scrollYProgress,
+    [0, 0.22],
+    [isCompact ? CARD_H : viewport.h, CARD_H],
+    { ease: smoothStep }
+  );
 
-  const rotateY = useTransform(scrollYProgress, [0.4, 0.75], [0, 180], { ease: smoothStep });
-  const rotateZLeft = useTransform(scrollYProgress, [0.4, 0.75], [0, cardTilt], { ease: smoothStep });
-  const rotateZRight = useTransform(scrollYProgress, [0.4, 0.75], [0, -cardTilt], { ease: smoothStep });
+  const splitRange = isCompact ? [0.1, 0.4] : [0.3, 0.52];
+  const flipRange = isCompact ? [0.4, 0.75] : [0.52, 0.78];
+  const scaleRange = isCompact ? [0.1, 0.4] : [0.3, 0.52];
+
+  const combinedScale = useTransform(scrollYProgress, scaleRange, [1, isPhone ? 0.98 : 0.9], { ease: smoothStep });
+
+  const leftX = useTransform(scrollYProgress, splitRange, [0, -splitDistance], { ease: smoothStep });
+  const rightX = useTransform(scrollYProgress, splitRange, [0, splitDistance], { ease: smoothStep });
+
+  const rotateY = useTransform(scrollYProgress, flipRange, [0, 180], { ease: smoothStep });
+  const rotateZLeft = useTransform(scrollYProgress, flipRange, [0, cardTilt], { ease: smoothStep });
+  const rotateZRight = useTransform(scrollYProgress, flipRange, [0, -cardTilt], { ease: smoothStep });
 
   // Cross-browser JS face-swap (Firefox / Zen / Safari / Chrome compliant)
   const frontFaceOpacity = useTransform(rotateY, (r) => (r < 90 ? 1 : 0));
   const backFaceOpacity = useTransform(rotateY, (r) => (r >= 90 ? 1 : 0));
 
   const borderRadiusLeft = useTransform(
-    scrollYProgress, [0.1, 0.35],
-    ["16px 0px 0px 16px", "16px 16px 16px 16px"],
+    scrollYProgress,
+    isCompact ? [0.1, 0.35] : [0, 0.22, 0.52],
+    isCompact
+      ? ["16px 0px 0px 16px", "16px 16px 16px 16px"]
+      : ["0px", "16px 0px 0px 16px", "16px 16px 16px 16px"],
     { ease: smoothStep }
   );
   const borderRadiusMiddle = useTransform(
-    scrollYProgress, [0.1, 0.35],
-    ["0px 0px 0px 0px", "16px 16px 16px 16px"],
+    scrollYProgress,
+    isCompact ? [0.1, 0.35] : [0, 0.22, 0.52],
+    isCompact
+      ? ["0px 0px 0px 0px", "16px 16px 16px 16px"]
+      : ["0px", "0px", "16px 16px 16px 16px"],
     { ease: smoothStep }
   );
   const borderRadiusRight = useTransform(
-    scrollYProgress, [0.1, 0.35],
-    ["0px 16px 16px 0px", "16px 16px 16px 16px"],
+    scrollYProgress,
+    isCompact ? [0.1, 0.35] : [0, 0.22, 0.52],
+    isCompact
+      ? ["0px 16px 16px 0px", "16px 16px 16px 16px"]
+      : ["0px", "0px 16px 16px 0px", "16px 16px 16px 16px"],
     { ease: smoothStep }
   );
 
-  const borderOpacity = useTransform(scrollYProgress, [0.05, 0.35], [0.1, 0.2], { ease: smoothStep });
-  const shadowOpacity = useTransform(scrollYProgress, [0.05, 0.35], [0.2, 0.4], { ease: smoothStep });
-  const boxShadow = useMotionTemplate`inset 0 1px 1px rgba(255,255,255,${borderOpacity}), inset 0 -24px 48px rgba(0,0,0,${shadowOpacity}), 0 25px 50px -12px rgba(0,0,0,${shadowOpacity})`;
-
-  const cardsY = useTransform(scrollYProgress, [0.65, 0.85], [0, finalCardsY], { ease: smoothStep });
-  const textOpacity = useTransform(scrollYProgress, [0.7, 0.88], [0, 1], { ease: smoothStep });
-  const textY = useTransform(scrollYProgress, [0.7, 0.88], [30, 0], { ease: smoothStep });
+  const cardsY = useTransform(scrollYProgress, isCompact ? [0.65, 0.85] : [0.75, 0.9], [0, finalCardsY], { ease: smoothStep });
+  const endingTextStart = isCompact ? 0.65 : 0.68;
+  const endingTextEnd = 0.76;
+  const textOpacity = useTransform(scrollYProgress, (progress) => {
+    const revealProgress = Math.min(
+      1,
+      Math.max(0, (progress - endingTextStart) / (endingTextEnd - endingTextStart))
+    );
+    return smoothStep(revealProgress);
+  });
+  const textRevealY = useTransform(textOpacity, (opacity) => 24 * (1 - opacity));
+  const endingTextGap = isPhone ? 40 : isCompact ? 48 : 56;
+  const endingTextY = useTransform(
+    [groupHeight, combinedScale, cardsY, textRevealY],
+    ([height, scale, cardOffset, revealOffset]) =>
+      (Number(height) * Number(scale)) / 2
+      + Number(cardOffset)
+      + endingTextGap
+      + Number(revealOffset)
+  );
   const startTextOpacity = useTransform(scrollYProgress, [0.01, 0.12], [1, 0], { ease: smoothStep });
   const startTextY = useTransform(scrollYProgress, [0.01, 0.12], [0, 20], { ease: smoothStep });
 
@@ -135,10 +184,12 @@ export function ScrollSplitCard({
         {/* Card group container */}
         <motion.div
           style={{
-            width: `${CARD_W}px`,
-            height: `${CARD_H}px`,
+            width: groupWidth,
+            height: groupHeight,
             scale: combinedScale,
             y: cardsY,
+            contain: "layout style",
+            willChange: "width, height, transform",
           }}
           className="scroll-split-card-group flex relative max-w-full"
         >
@@ -152,12 +203,23 @@ export function ScrollSplitCard({
                 rotateY,
                 rotateZ: i === 0 ? rotateZLeft : i === 2 ? rotateZRight : 0,
                 zIndex: i,
+                transformStyle: "preserve-3d",
+                willChange: "transform",
               }}
             >
               {/* Front Side: Split Image */}
               <motion.div
-                className="absolute inset-0 overflow-hidden"
-                style={{ zIndex: 2, opacity: frontFaceOpacity, borderRadius: getBR(i), boxShadow }}
+                className="scroll-split-card-front absolute inset-0 overflow-hidden"
+                style={{
+                  zIndex: 2,
+                  opacity: frontFaceOpacity,
+                  borderRadius: getBR(i),
+                  boxShadow: CARD_FACE_SHADOW,
+                  backfaceVisibility: "hidden",
+                  WebkitBackfaceVisibility: "hidden",
+                  contain: "paint",
+                  willChange: "opacity",
+                }}
               >
                 <div
                   className="absolute inset-0 h-full w-[300%]"
@@ -184,7 +246,9 @@ export function ScrollSplitCard({
                   transform: "scaleX(-1)", // Counteracts parent 180 Y-rotation flip
                   zIndex: 3,
                   borderRadius: getBR(i),
-                  boxShadow,
+                  boxShadow: CARD_FACE_SHADOW,
+                  contain: "paint",
+                  willChange: "opacity",
                 }}
               >
                 <div
@@ -211,11 +275,11 @@ export function ScrollSplitCard({
 
         {/* Ending Text */}
         <motion.div
-          className="scroll-split-ending absolute bottom-[10%] sm:bottom-[15%] left-0 right-0 text-center pointer-events-none"
-          style={{ opacity: textOpacity, y: textY }}
+          className="scroll-split-ending absolute top-1/2 left-0 right-0 text-center pointer-events-none"
+          style={{ opacity: textOpacity, y: endingTextY }}
         >
           <p className="scroll-split-ending-text px-4 font-medium tracking-tight text-white font-serif italic text-base sm:text-xl">
-            This is what I bring to the table.
+            That&apos;s all I bring to the table.
           </p>
         </motion.div>
       </div>

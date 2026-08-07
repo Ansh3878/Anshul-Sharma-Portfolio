@@ -72,9 +72,6 @@ function StickyScrollCard({
   const entranceY = useTransform(progress, [entranceStart, entranceEnd], [44, 0], {
     ease: smoothStep,
   });
-  const opacity = useTransform(progress, [entranceStart, entranceEnd], [0.82, 1], {
-    ease: smoothStep,
-  });
   const rotation = useTransform(
     progress,
     [entranceStart, entranceEnd],
@@ -88,13 +85,13 @@ function StickyScrollCard({
         scale,
         rotate: rotation,
         y: entranceY,
-        opacity,
+        backgroundColor: "#18181b",
         boxShadow: "0 10px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)",
-        willChange: "transform, opacity",
+        willChange: "transform",
       }}
-      className="project-stack-card relative origin-top overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 flex flex-col w-[500px] cursor-pointer hover:border-white/20 transition-colors"
+      className="project-stack-card isolate relative origin-top overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 flex flex-col w-[500px] cursor-pointer hover:border-white/20 transition-colors"
     >
-      <div className="project-card-media w-full h-[280px] overflow-hidden relative">
+      <div className="project-card-media w-full h-[280px] overflow-hidden relative bg-zinc-900">
         <img
           src={src}
           alt={title}
