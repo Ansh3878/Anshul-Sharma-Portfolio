@@ -64,7 +64,7 @@ const Ray = ({
         {
           "--ray-left": `${left}%`,
           "--ray-width": `${width}px`,
-          willChange: "transform, opacity, filter",
+          willChange: "transform, opacity",
         } as CSSProperties
       }
       initial={{ rotate: rotate }}
@@ -95,20 +95,33 @@ export function LightRays({
   ...props
 }: LightRaysProps) {
   const [rays, setRays] = useState<LightRay[]>([])
-  const [isMobile, setIsMobile] = useState(false)
+  const [deviceProfile, setDeviceProfile] = useState({ isMobile: false, isCompact: false })
   const cycleDuration = Math.max(speed, 0.1)
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 639px)")
-    const updateMobile = () => setIsMobile(mediaQuery.matches)
-    updateMobile()
-    mediaQuery.addEventListener("change", updateMobile)
-    return () => mediaQuery.removeEventListener("change", updateMobile)
+    const mobileQuery = window.matchMedia("(max-width: 639px)")
+    const compactQuery = window.matchMedia("(max-width: 1023px)")
+    const updateProfile = () => setDeviceProfile({
+      isMobile: mobileQuery.matches,
+      isCompact: compactQuery.matches,
+    })
+    updateProfile()
+    mobileQuery.addEventListener("change", updateProfile)
+    compactQuery.addEventListener("change", updateProfile)
+    return () => {
+      mobileQuery.removeEventListener("change", updateProfile)
+      compactQuery.removeEventListener("change", updateProfile)
+    }
   }, [])
 
   useEffect(() => {
-    setRays(createRays(isMobile ? Math.min(count, 3) : count, cycleDuration))
-  }, [count, cycleDuration, isMobile])
+    const rayCount = deviceProfile.isMobile
+      ? Math.min(count, 3)
+      : deviceProfile.isCompact
+        ? Math.min(count, 4)
+        : count
+    setRays(createRays(rayCount, cycleDuration))
+  }, [count, cycleDuration, deviceProfile])
 
   return (
     <div
@@ -120,8 +133,8 @@ export function LightRays({
       style={
         {
           "--light-rays-color": color,
-          "--light-rays-blur": `${isMobile ? Math.min(blur, 20) : blur}px`,
-          "--light-rays-length": isMobile ? "58svh" : length,
+          "--light-rays-blur": `${deviceProfile.isMobile ? Math.min(blur, 20) : deviceProfile.isCompact ? Math.min(blur, 24) : blur}px`,
+          "--light-rays-length": deviceProfile.isMobile ? "58svh" : length,
           ...style,
         } as CSSProperties
       }

@@ -69,7 +69,7 @@ const useImageLoader = (seqRef: any, onLoad: any, dependencies: any[]) => {
   }, [onLoad, seqRef, dependencies]);
 };
 
-const useAnimationLoop = (trackRef: any, targetVelocity: any, seqWidth: any, seqHeight: any, isHovered: any, hoverSpeed: any, isVertical: any) => {
+const useAnimationLoop = (trackRef: any, targetVelocity: any, seqWidth: any, seqHeight: any, isHovered: any, hoverSpeed: any, isVertical: any, isActive: boolean) => {
   const rafRef = useRef(null);
   const lastTimestampRef = useRef(null);
   const offsetRef = useRef(0);
@@ -99,6 +99,11 @@ const useAnimationLoop = (trackRef: any, targetVelocity: any, seqWidth: any, seq
       return () => {
         lastTimestampRef.current = null;
       };
+    }
+
+    if (!isActive) {
+      lastTimestampRef.current = null;
+      return;
     }
 
     const animate = (timestamp: number) => {
@@ -137,7 +142,7 @@ const useAnimationLoop = (trackRef: any, targetVelocity: any, seqWidth: any, seq
       }
       lastTimestampRef.current = null;
     };
-  }, [targetVelocity, seqWidth, seqHeight, isHovered, hoverSpeed, isVertical, trackRef]);
+  }, [targetVelocity, seqWidth, seqHeight, isHovered, hoverSpeed, isVertical, trackRef, isActive]);
 };
 
 export interface LogoLoopProps {
@@ -184,6 +189,27 @@ export const LogoLoop: React.FC<LogoLoopProps> = memo(
     const [seqHeight, setSeqHeight] = useState(0);
     const [copyCount, setCopyCount] = useState(ANIMATION_CONFIG.MIN_COPIES);
     const [isHovered, setIsHovered] = useState(false);
+    const [isActive, setIsActive] = useState(false);
+
+    useEffect(() => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      let isIntersecting = false;
+      const updateActive = () => setIsActive(isIntersecting && !document.hidden);
+      const observer = new IntersectionObserver(([entry]) => {
+        isIntersecting = entry.isIntersecting;
+        updateActive();
+      }, { rootMargin: '100px' });
+      const handleVisibilityChange = () => updateActive();
+
+      observer.observe(container);
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      return () => {
+        observer.disconnect();
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      };
+    }, []);
 
     const effectiveHoverSpeed = useMemo(() => {
       if (hoverSpeed !== undefined) return hoverSpeed;
@@ -235,7 +261,7 @@ export const LogoLoop: React.FC<LogoLoopProps> = memo(
 
     useImageLoader(seqRef, updateDimensions, [logos, gap, logoHeight, isVertical]);
 
-    useAnimationLoop(trackRef, targetVelocity, seqWidth, seqHeight, isHovered, effectiveHoverSpeed, isVertical);
+    useAnimationLoop(trackRef, targetVelocity, seqWidth, seqHeight, isHovered, effectiveHoverSpeed, isVertical, isActive);
 
     const cssVariables = useMemo(
       () => ({

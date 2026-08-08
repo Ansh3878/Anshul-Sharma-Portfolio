@@ -129,8 +129,11 @@ export default function CallToAction() {
                 src={GIF_URL}
                 alt="Let's build something great"
                 className="cta-media-image w-full object-cover block"
+                width="480"
+                height="270"
                 loading="lazy"
                 decoding="async"
+                fetchPriority="low"
               />
             </div>
           </div>

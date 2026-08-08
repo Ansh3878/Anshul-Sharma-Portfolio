@@ -1,7 +1,14 @@
 import { useEffect, useId, useState } from "react";
 import { motion } from "motion/react";
-import * as opentype from "opentype.js";
+import type { Font } from "opentype.js";
 import { cn } from "@/lib/utils";
+import {
+  DEFAULT_SIGNATURE_FONT_SIZE,
+  DEFAULT_SIGNATURE_HEIGHT,
+  DEFAULT_SIGNATURE_PATHS,
+  DEFAULT_SIGNATURE_TEXT,
+  DEFAULT_SIGNATURE_WIDTH,
+} from "./signature-data";
 
 interface SignatureProps {
   text?: string;
@@ -26,19 +33,36 @@ export function Signature({
   once = true,
   fontUrl,
 }: SignatureProps) {
-  const [paths, setPaths] = useState<string[]>([]);
-  const [svgWidth, setSvgWidth] = useState(300);
-  const [ready, setReady] = useState(false);
+  const usesPrecomputedSignature =
+    !fontUrl &&
+    text === DEFAULT_SIGNATURE_TEXT &&
+    fontSize === DEFAULT_SIGNATURE_FONT_SIZE;
+  const [paths, setPaths] = useState<string[]>(() =>
+    usesPrecomputedSignature ? [...DEFAULT_SIGNATURE_PATHS] : []
+  );
+  const [svgWidth, setSvgWidth] = useState(
+    usesPrecomputedSignature ? DEFAULT_SIGNATURE_WIDTH : 300
+  );
+  const [ready, setReady] = useState(usesPrecomputedSignature);
 
-  const height = fontSize * 3;
+  const height = usesPrecomputedSignature ? DEFAULT_SIGNATURE_HEIGHT : fontSize * 3;
   const baseline = fontSize * 1.5;
   const hPad = fontSize * 0.1;
   const maskId = `sig-${useId().replace(/:/g, "")}`;
 
   useEffect(() => {
+    if (usesPrecomputedSignature) {
+      setPaths([...DEFAULT_SIGNATURE_PATHS]);
+      setSvgWidth(DEFAULT_SIGNATURE_WIDTH);
+      setReady(true);
+      return;
+    }
+
     let cancelled = false;
 
     async function load() {
+      setReady(false);
+      const opentype = await import("opentype.js");
       const candidates = fontUrl
         ? [fontUrl]
         : [
@@ -46,7 +70,7 @@ export function Signature({
             "https://www.componentry.fun/LastoriaBoldRegular.otf",
           ];
 
-      let font: opentype.Font | null = null;
+      let font: Font | null = null;
 
       for (const src of candidates) {
         try {
@@ -87,7 +111,7 @@ export function Signature({
     load();
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [text, fontSize, fontUrl]);
+  }, [text, fontSize, fontUrl, usesPrecomputedSignature]);
 
   const variants = {
     hidden: { pathLength: 0, opacity: 0 },

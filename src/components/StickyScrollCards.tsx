@@ -99,6 +99,7 @@ function StickyScrollCard({
           draggable={false}
           loading="lazy"
           decoding="async"
+          fetchPriority="low"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/40 to-transparent" />
       </div>

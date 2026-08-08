@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence, type Variants } from "motion/react";
 import {
   ArrowUpRight,
@@ -81,11 +81,23 @@ const Navbar = ({ onOpen }: { onOpen: () => void }) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
+    let frameId = 0;
+
+    const updateNavbar = () => {
+      frameId = 0;
       setIsScrolled(window.scrollY > 80);
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    const handleScroll = () => {
+      if (!frameId) frameId = window.requestAnimationFrame(updateNavbar);
+    };
+
+    updateNavbar();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (frameId) window.cancelAnimationFrame(frameId);
+    };
   }, []);
 
   return (
@@ -96,9 +108,17 @@ const Navbar = ({ onOpen }: { onOpen: () => void }) => {
       )}>
         <div
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="flex cursor-pointer items-center gap-2 font-signature text-2xl font-bold tracking-wider text-white transition-opacity duration-300 hover:opacity-80"
+          className="flex cursor-pointer items-center transition-opacity duration-300 hover:opacity-80"
         >
-          <span>AS</span>
+          <img
+            src="/img/portfolio-logo.webp"
+            alt="Portfolio logo"
+            width="192"
+            height="192"
+            decoding="async"
+            fetchPriority="high"
+            className="h-11 w-auto object-contain sm:h-12"
+          />
         </div>
         <button
           onClick={onOpen}
@@ -207,7 +227,7 @@ const Hero = ({ isVisible }: { isVisible: boolean }) => {
 const ScrollSplitSection = () => {
   return (
     <ScrollSplitCard
-      imageSrc="/img/ascii-magic-1.png"
+      imageSrc="/img/ascii-magic-1.webp"
       cards={[
         {
           title: "Full-Stack Engineering",
@@ -267,7 +287,7 @@ const About = () => (
       >
         <AnimatedButton
           label="View Resume"
-          href="https://drive.google.com/file/d/1aXdUiuedu5qcfvQK974La_vbCfEVW09Q/view?usp=sharing"
+          href="https://drive.google.com/file/d/18Lc36gU33gGie56VTbLWOfeGkEtaaJ-H/view?usp=drive_link"
           target="_blank"
           rel="noopener noreferrer"
         />
@@ -453,7 +473,7 @@ const PROJECTS: Project[] = [
     tagline: "Zero-Knowledge Security Suite",
     desc: "A client-side encrypted workspace for secure file sharing, persistent storage vaults with dead-man switches, and ephemeral WebSocket chat.",
     tags: ["React", "AWS Serverless", "Web Crypto", "Clerk"],
-    image: "/img/keepr_image.png",
+    image: "/img/keepr_image.webp",
     href: "https://keepr-4j2p.onrender.com",
   },
   {
@@ -461,7 +481,7 @@ const PROJECTS: Project[] = [
     tagline: "Career Companion",
     desc: "A modern workspace utilising Gemini AI to transform how professionals manage their career growth and technical skill acquisition.",
     tags: ["Next.js", "Gemini API", "Tailwind"],
-    image: "/img/matrix-image.png",
+    image: "/img/matrix-image.webp",
     href: "https://matrix-ai-psi.vercel.app/",
   },
   {
@@ -469,7 +489,7 @@ const PROJECTS: Project[] = [
     tagline: "AI Agricultural Platform",
     desc: "An AI-powered platform for real-time crop disease detection using computer vision to provide actionable treatment recommendations for farmers.",
     tags: ["Next.js", "PostgreSQL", "OpenAI", "ML"],
-    image: "https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&q=80&w=1400",
+    image: "https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&q=76&w=1000",
     href: "https://crop-doc-rho.vercel.app/",
   },
 ];
